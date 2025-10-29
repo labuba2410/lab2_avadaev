@@ -1,4 +1,4 @@
-#include "pipe.h"
+#include "Pipe.h"
 
 Pipe::Pipe() : id(0), name(""), length(0.0f), diameter(0), status(false) {}
 
