@@ -34,4 +34,3 @@ public:
     friend std::istream& operator>>(std::istream& in, CompressStation& cs);
 };
 
-#endif
