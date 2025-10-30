@@ -128,11 +128,13 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="operations.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CS.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="operations.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Pipe.h" />
