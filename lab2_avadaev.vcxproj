@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CS.cpp" />
+    <ClCompile Include="file_op.cpp" />
     <ClCompile Include="lab2_avadaev.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Pipe.cpp" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CS.h" />
+    <ClInclude Include="file_op.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="utils.h" />
