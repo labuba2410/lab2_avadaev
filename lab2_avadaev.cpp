@@ -16,15 +16,13 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             << "1. Add pipe\n"
             << "2. Add CS\n"
             << "3. View all objects\n"
-            << "4. Edit pipe repair status\n"
-            << "5. Edit CS workshops in work\n"
-            << "6. Search pipes\n"
-            << "7. Search CS\n"
-            << "8. Batch edit pipes\n"
-            << "9. Save\n"
-            << "10. Load\n"
-            << "11. Edit pipe by ID (all fields)\n"
-            << "12. Edit CS by ID (all fields)\n"
+            << "4. Search pipes\n"
+            << "5. Search CS\n"
+            << "6. Batch edit pipes\n"
+            << "7. Save\n"
+            << "8. Load\n"
+            << "9. Edit pipe by ID (all fields)\n"
+            << "10. Edit CS by ID (all fields)\n"
             << "0. Exit\n";
 
         if (!isValidInput(menu_choose, "Enter your choice: ")) {
@@ -48,94 +46,6 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             break;
 
         case 4: {
-            if (pipes.empty()) {
-                std::cout << "No pipes available to edit.\n\n";
-                break;
-            }
-
-            int pipeId;
-            if (!isValidInput(pipeId, "Enter pipe ID to edit: ")) {
-                std::cout << "Invalid ID!\n\n";
-                break;
-            }
-            logger.logUserInput(std::to_string(pipeId));
-
-            if (pipes.find(pipeId) == pipes.end()) {
-                std::cout << "Pipe with ID " << pipeId << " not found.\n\n";
-                break;
-            }
-
-            std::cout << "Current status: " << (pipes[pipeId].getStatus() ? "UNDER RENOVATION" : "WORKING") << "\n";
-            std::cout << "Select new repair status:\n";
-            std::cout << "1. Put UNDER RENOVATION (repair ON)\n";
-            std::cout << "2. Set to WORKING (repair OFF)\n";
-
-            int statusChoice;
-            if (!isValidInput(statusChoice, "Enter your choice: ")) {
-                std::cout << "Invalid choice!\n\n";
-                break;
-            }
-            logger.logUserInput(std::to_string(statusChoice));
-
-            bool newStatus;
-            std::string statusText;
-
-            switch (statusChoice) {
-            case 1:
-                newStatus = true;
-                statusText = "UNDER RENOVATION";
-                break;
-            case 2:
-                newStatus = false;
-                statusText = "WORKING";
-                break;
-            default:
-                std::cout << "Invalid choice!\n\n";
-                break;
-            }
-
-            if (statusChoice >= 1 && statusChoice <= 2) {
-                pipes[pipeId].setStatus(newStatus);
-                std::cout << "Pipe status updated to: " << statusText << "\n\n";
-            }
-            break;
-        }
-
-        case 5: {
-            if (stations.empty()) {
-                std::cout << "No CS available to edit.\n\n";
-                break;
-            }
-
-            int stationId;
-            if (!isValidInput(stationId, "Enter CS ID to edit: ")) {
-                std::cout << "Invalid ID!\n\n";
-                break;
-            }
-            logger.logUserInput(std::to_string(stationId));
-
-            if (stations.find(stationId) == stations.end()) {
-                std::cout << "CS with ID " << stationId << " not found.\n\n";
-                break;
-            }
-
-            int newWorkshopsInWork;
-            if (!isValidInput(newWorkshopsInWork, "Enter new number of workshops in work: ")) {
-                std::cout << "Invalid number!\n\n";
-                break;
-            }
-            logger.logUserInput(std::to_string(newWorkshopsInWork));
-
-            if (stations[stationId].changeNumberOfWorkshopsInWork(newWorkshopsInWork)) {
-                std::cout << "CS updated successfully!\n\n";
-            }
-            else {
-                std::cout << "Invalid number of workshops in work!\n\n";
-            }
-            break;
-        }
-
-        case 6: {
             std::cout << "Search pipes by:\n"
                 << "1. ID\n"
                 << "2. Name\n"
@@ -202,7 +112,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             break;
         }
 
-        case 7: {
+        case 5: {
             std::cout << "Search CS by:\n"
                 << "1. ID\n"
                 << "2. Name\n"
@@ -264,11 +174,11 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             break;
         }
 
-        case 8:
+        case 6:
             batchEditPipes(pipes, logger);
             break;
 
-        case 9: {
+        case 7: {
             std::string filename;
             if (!isValidInput(filename, "Enter filename to save: ")) {
                 std::cout << "Invalid filename!\n\n";
@@ -293,7 +203,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             break;
         }
 
-        case 10: {
+        case 8: {
             std::string filename;
             if (!isValidInput(filename, "Enter filename to load: ")) {
                 std::cout << "Invalid filename!\n\n";
@@ -318,11 +228,11 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             break;
         }
 
-        case 11:
+        case 9:
             editPipe(pipes, logger);
             break;
 
-        case 12:
+        case 10:
             editCompressStation(stations, logger);
             break;
 
