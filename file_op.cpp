@@ -2,9 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include "globals.h"
+#include "Network.h"
 
 void saveData(const std::string& filename, const std::map<int, Pipe>& pipes,
-    const std::map<int, CompressStation>& stations, Logger& logger) {
+    const std::map<int, CompressStation>& stations, const GasNetwork& network, Logger& logger) {
     std::ofstream file(filename);
 
     if (file.is_open()) {
@@ -25,6 +26,20 @@ void saveData(const std::string& filename, const std::map<int, Pipe>& pipes,
             file << STATION_END_TAG << "\n\n";
         }
 
+        file << NETWORK_START_TAG << "\n";
+        const auto& adjList = network.getAdjacencyList();
+        for (const auto& pair : adjList) {
+            for (const auto& conn : pair.second) {
+                file << CONNECTION_START_TAG << "\n";
+                file << conn.pipeId << "\n";
+                file << conn.startCSId << "\n";
+                file << conn.endCSId << "\n";
+                file << conn.diameter << "\n";
+                file << CONNECTION_END_TAG << "\n\n";
+            }
+        }
+        file << NETWORK_END_TAG << "\n";
+
         file.close();
         std::cout << "Data saved to " << filename << "\n\n";
     }
@@ -35,7 +50,7 @@ void saveData(const std::string& filename, const std::map<int, Pipe>& pipes,
 
 
 void loadData(const std::string& filename, std::map<int, Pipe>& pipes,
-    std::map<int, CompressStation>& stations, Logger& logger) {
+    std::map<int, CompressStation>& stations, GasNetwork& network, Logger& logger) {
     std::ifstream file(filename);
 
     if (!file.is_open()) {
@@ -48,6 +63,7 @@ void loadData(const std::string& filename, std::map<int, Pipe>& pipes,
 
     std::string line;
     bool counters_loaded = false;
+    bool reading_network = false;
 
     try {
         while (std::getline(file, line)) {
@@ -107,6 +123,24 @@ void loadData(const std::string& filename, std::map<int, Pipe>& pipes,
 
                 std::getline(file, line);
             }
+
+            else if (line == NETWORK_START_TAG) {
+                reading_network = true;
+                continue;
+            }
+
+            else if (line == NETWORK_END_TAG) {
+                reading_network = false;
+                continue;
+            }
+
+            else if (line == CONNECTION_START_TAG && reading_network) {
+                int pipeId, startCSId, endCSId, diameter;
+                file >> pipeId >> startCSId >> endCSId >> diameter;
+                network.addConnection(pipeId, startCSId, endCSId, diameter);
+                std::getline(file, line); 
+            }
+
         }
 
         if (!counters_loaded) {
