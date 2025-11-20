@@ -609,3 +609,147 @@ void batchEditPipes(std::map<int, Pipe>& pipes, Logger& logger) {
         std::cout << "Invalid choice!\n\n";
     }
 }
+
+
+void connectCS(std::map<int, Pipe>& pipes, std::map<int, CompressStation>& stations,
+    GasNetwork& network, Logger& logger) {
+
+    if (stations.size() < 2) {
+        std::cout << "Need at least 2 compress stations to create connection!\n\n";
+        return;
+    }
+
+    std::cout << "Available compress stations:\n";
+    for (const auto& pair : stations) {
+        std::cout << "ID: " << pair.first << " - " << pair.second.getName() << "\n";
+    }
+
+    int startCSId, endCSId, diameter;
+
+    if (!isValidInput(startCSId, "Enter START CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(startCSId));
+
+    if (stations.find(startCSId) == stations.end()) {
+        std::cout << "Start CS with ID " << startCSId << " not found!\n\n";
+        return;
+    }
+
+    if (!isValidInput(endCSId, "Enter END CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(endCSId));
+
+    if (stations.find(endCSId) == stations.end()) {
+        std::cout << "End CS with ID " << endCSId << " not found!\n\n";
+        return;
+    }
+
+    std::cout << "Available diameters: 500, 700, 1000, 1400\n";
+    if (!isValidInput(diameter, "Enter diameter: ")) {
+        std::cout << "Invalid diameter!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(diameter));
+
+    if (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400) {
+        std::cout << "Invalid diameter! Must be 500, 700, 1000, or 1400.\n\n";
+        return;
+    }
+
+
+    std::vector<int> availablePipes = network.findAvailablePipes(pipes, diameter);
+
+    int pipeId;
+    if (!availablePipes.empty()) {
+ 
+        std::cout << "Available pipes with diameter " << diameter << ":\n";
+        for (int id : availablePipes) {
+            std::cout << "ID: " << id << " - " << pipes[id].getName() << "\n";
+        }
+
+        if (!isValidInput(pipeId, "Enter pipe ID to use: ")) {
+            std::cout << "Invalid pipe ID!\n\n";
+            return;
+        }
+        logger.logUserInput(std::to_string(pipeId));
+
+        if (std::find(availablePipes.begin(), availablePipes.end(), pipeId) == availablePipes.end()) {
+            std::cout << "Invalid pipe selection!\n\n";
+            return;
+        }
+    }
+    else {
+ 
+        std::cout << "No available pipes with diameter " << diameter << ". Creating new pipe...\n";
+
+        std::string name;
+        float length;
+
+        if (!isValidInput(name, "Enter name for new pipe: ")) {
+            std::cout << "Invalid name!\n\n";
+            return;
+        }
+        logger.logUserInput(name);
+
+        if (!isValidInput(length, "Enter length for new pipe: ") || length <= 0) {
+            std::cout << "Invalid length!\n\n";
+            return;
+        }
+        logger.logUserInput(std::to_string(length));
+
+        pipeId = getNextPipeId();
+        Pipe newPipe(pipeId, name, length, diameter);
+        pipes[pipeId] = newPipe;
+
+        std::cout << "Created new pipe with ID: " << pipeId << "\n";
+    }
+
+
+    if (network.addConnection(pipeId, startCSId, endCSId, diameter)) {
+        std::cout << "Successfully connected CS " << startCSId << " to CS " << endCSId
+            << " using pipe " << pipeId << "\n\n";
+    }
+    else {
+        std::cout << "Failed to create connection!\n\n";
+    }
+}
+
+void disconnectCS(GasNetwork& network, Logger& logger) {
+    int pipeId;
+
+    if (!isValidInput(pipeId, "Enter pipe ID to disconnect: ")) {
+        std::cout << "Invalid pipe ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(pipeId));
+
+    if (network.removeConnection(pipeId)) {
+        std::cout << "Successfully disconnected pipe " << pipeId << " from network.\n\n";
+    }
+    else {
+        std::cout << "Pipe " << pipeId << " is not connected in the network!\n\n";
+    }
+}
+
+void showNetwork(const GasNetwork& network) {
+    network.displayNetwork();
+}
+
+void topologicalSortNetwork(const GasNetwork& network) {
+    std::vector<int> sorted = network.topologicalSort();
+
+    if (sorted.empty()) {
+        std::cout << "Network contains cycles! Cannot perform topological sort.\n\n";
+    }
+    else {
+        std::cout << "Topological order of compress stations:\n";
+        for (size_t i = 0; i < sorted.size(); ++i) {
+            std::cout << (i + 1) << ". CS " << sorted[i] << "\n";
+        }
+        std::cout << "\n";
+    }
+}

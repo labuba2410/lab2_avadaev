@@ -7,6 +7,7 @@
 #include "CS.h"
 #include "Logger.h"
 #include "utils.h"
+#include "Network.h"
 
 
 void addPipe(std::map<int, Pipe>& pipes, Logger& logger);
@@ -24,3 +25,8 @@ std::vector<int> findStationsById(const std::map<int, CompressStation>& stations
 
 void viewAllObjects(const std::map<int, Pipe>& pipes, const std::map<int, CompressStation>& stations);
 
+void connectCS(std::map<int, Pipe>& pipes, std::map<int, CompressStation>& stations,
+    GasNetwork& network, Logger& logger);
+void disconnectCS(GasNetwork& network, Logger& logger);
+void showNetwork(const GasNetwork& network);
+void topologicalSortNetwork(const GasNetwork& network);
