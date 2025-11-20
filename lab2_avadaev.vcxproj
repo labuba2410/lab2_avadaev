@@ -127,6 +127,7 @@
     <ClCompile Include="file_op.cpp" />
     <ClCompile Include="lab2_avadaev.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="operations.cpp" />
@@ -136,6 +137,7 @@
     <ClInclude Include="CS.h" />
     <ClInclude Include="file_op.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Logger.h" />
