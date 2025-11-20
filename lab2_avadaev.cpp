@@ -8,7 +8,7 @@
 #include "operations.h"
 #include "globals.h"
 
-void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations, Logger & logger) {
+void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations, GasNetwork& network ,Logger& logger) {
     int menu_choose;
 
     while (true) {
@@ -23,6 +23,10 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             << "8. Load\n"
             << "9. Edit pipe by ID (all fields)\n"
             << "10. Edit CS by ID (all fields)\n"
+            << "11. Connect CS\n"
+            << "12. Disconnect CS\n"
+            << "13. Show network\n"
+            << "14. Topological sort\n"
             << "0. Exit\n";
 
         if (!isValidInput(menu_choose, "Enter your choice: ")) {
@@ -175,7 +179,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
         }
 
         case 6:
-            batchEditPipes(pipes, logger);
+            batchEditPipes(pipes, network, logger);
             break;
 
         case 7: {
@@ -195,7 +199,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             logger.logUserInput(std::string(1, choice));
 
             if (tolower(choice) == 'y') {
-                saveData(filename, pipes, stations, logger);
+                saveData(filename, pipes, stations, network, logger);
             }
             else {
                 std::cout << "Save cancelled.\n\n";
@@ -220,7 +224,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             logger.logUserInput(std::string(1, choice));
 
             if (tolower(choice) == 'y') {
-                loadData(filename, pipes, stations, logger);
+                loadData(filename, pipes, stations, network, logger);
             }
             else {
                 std::cout << "Load cancelled.\n\n";
@@ -236,6 +240,22 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             editCompressStation(stations, logger);
             break;
 
+        case 11:
+            connectCS(pipes, stations, network, logger);
+            break;
+
+        case 12:
+            disconnectCS(network, logger);
+            break;
+
+        case 13:
+            showNetwork(network);
+            break;
+
+        case 14:
+            topologicalSortNetwork(network);
+            break;
+
         case 0:
             std::cout << "Goodbye!\n";
             return;
@@ -248,13 +268,14 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
 }
 
 int main() {
+    GasNetwork network;
     std::map<int, Pipe> pipes;
     std::map<int, CompressStation> stations;
     Logger logger("user_commands_log.txt");
 
     std::cout << "Welcome to the application 'Gas and Oil Pipeline Transportation System'\n";
 
-    showMenu(pipes, stations, logger);
+    showMenu(pipes, stations, network, logger);
 
     return 0;
 }

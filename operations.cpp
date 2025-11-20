@@ -402,7 +402,7 @@ void editCompressStation(std::map<int, CompressStation>& stations, Logger& logge
     } while (fieldChoice != 0);
 }
 
-void batchEditPipes(std::map<int, Pipe>& pipes, Logger& logger) {
+void batchEditPipes(std::map<int, Pipe>& pipes, GasNetwork& network, Logger& logger) {
     if (pipes.empty()) {
         std::cout << "No pipes available to edit.\n\n";
         return;
@@ -589,6 +589,23 @@ void batchEditPipes(std::map<int, Pipe>& pipes, Logger& logger) {
         }
     }
     else if (choice == 2) {
+
+        std::vector<int> pipesUsedInNetwork;
+        for (int id : pipesToEdit) {
+            if (network.isPipeUsed(id)) {
+                pipesUsedInNetwork.push_back(id);
+            }
+        }
+
+        if (!pipesUsedInNetwork.empty()) {
+            std::cout << "Cannot delete pipes that are used in the network:\n";
+            for (int id : pipesUsedInNetwork) {
+                std::cout << "Pipe " << id << " is used in network connections\n";
+            }
+            std::cout << "Please disconnect them from network first.\n\n";
+            return;
+        }
+
         std::cout << "Are you sure you want to delete " << pipesToEdit.size() << " pipes? (Y/N): ";
         char confirm;
         std::cin >> confirm;

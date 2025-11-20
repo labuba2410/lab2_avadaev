@@ -15,7 +15,7 @@ void editPipe(std::map<int, Pipe>& pipes, Logger& logger);
 std::vector<int> findPipesByName(const std::map<int, Pipe>& pipes, const std::string& name);
 std::vector<int> findPipesByStatus(const std::map<int, Pipe>& pipes, bool status);
 std::vector<int> findPipesById(const std::map<int, Pipe>& pipes, int id);
-void batchEditPipes(std::map<int, Pipe>& pipes, Logger& logger);
+void batchEditPipes(std::map<int, Pipe>& pipes, GasNetwork& network, Logger& logger);
 
 void addCompressStation(std::map<int, CompressStation>& stations, Logger& logger);
 void editCompressStation(std::map<int, CompressStation>& stations, Logger& logger);
