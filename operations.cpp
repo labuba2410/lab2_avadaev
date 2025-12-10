@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
-void addPipe(std::map<int, Pipe>& pipes, Logger& logger) {
+void Operations::addPipe(std::map<int, Pipe>& pipes, Logger& logger) {
     std::string name;
     float length;
     int diameter;
@@ -31,7 +31,7 @@ void addPipe(std::map<int, Pipe>& pipes, Logger& logger) {
     std::cout << "Pipe created successfully! ID: " << newPipe.getId() << "\n\n";
 }
 
-void addCompressStation(std::map<int, CompressStation>& stations, Logger& logger) {
+void Operations::addCompressStation(std::map<int, CompressStation>& stations, Logger& logger) {
     std::string name, class_cs;
     int workshops, workshops_in_work;
 
@@ -70,7 +70,7 @@ void addCompressStation(std::map<int, CompressStation>& stations, Logger& logger
     std::cout << "CS created successfully! ID: " << newCS.getId() << "\n\n";
 }
 
-void viewAllObjects(const std::map<int, Pipe>& pipes, const std::map<int, CompressStation>& stations) {
+void Operations::viewAllObjects(const std::map<int, Pipe>& pipes, const std::map<int, CompressStation>& stations) {
     std::cout << "=== PIPES ===\n";
     if (pipes.empty()) {
         std::cout << "No pipes available.\n";
@@ -93,7 +93,7 @@ void viewAllObjects(const std::map<int, Pipe>& pipes, const std::map<int, Compre
     std::cout << std::endl;
 }
 
-std::vector<int> findPipesByName(const std::map<int, Pipe>& pipes, const std::string& name) {
+std::vector<int> Operations::findPipesByName(const std::map<int, Pipe>& pipes, const std::string& name) {
     std::vector<int> result;
     for (const auto& pair : pipes) {
         if (pair.second.getName().find(name) != std::string::npos) {
@@ -103,7 +103,7 @@ std::vector<int> findPipesByName(const std::map<int, Pipe>& pipes, const std::st
     return result;
 }
 
-std::vector<int> findPipesByStatus(const std::map<int, Pipe>& pipes, bool status) {
+std::vector<int> Operations::findPipesByStatus(const std::map<int, Pipe>& pipes, bool status) {
     std::vector<int> result;
     for (const auto& pair : pipes) {
         if (pair.second.getStatus() == status) {
@@ -113,7 +113,7 @@ std::vector<int> findPipesByStatus(const std::map<int, Pipe>& pipes, bool status
     return result;
 }
 
-std::vector<int> findPipesById(const std::map<int, Pipe>& pipes, int id) {
+std::vector<int> Operations::findPipesById(const std::map<int, Pipe>& pipes, int id) {
     std::vector<int> result;
     if (pipes.find(id) != pipes.end()) {
         result.push_back(id);
@@ -121,7 +121,7 @@ std::vector<int> findPipesById(const std::map<int, Pipe>& pipes, int id) {
     return result;
 }
 
-std::vector<int> findStationsByName(const std::map<int, CompressStation>& stations, const std::string& name) {
+std::vector<int> Operations::findStationsByName(const std::map<int, CompressStation>& stations, const std::string& name) {
     std::vector<int> result;
     for (const auto& pair : stations) {
         if (pair.second.getName().find(name) != std::string::npos) {
@@ -131,7 +131,7 @@ std::vector<int> findStationsByName(const std::map<int, CompressStation>& statio
     return result;
 }
 
-std::vector<int> findStationsByUnusedPercentage(const std::map<int, CompressStation>& stations, double minPercent, double maxPercent) {
+std::vector<int> Operations::findStationsByUnusedPercentage(const std::map<int, CompressStation>& stations, double minPercent, double maxPercent) {
     std::vector<int> result;
     for (const auto& pair : stations) {
         double percent = pair.second.getUnusedPercentage();
@@ -142,7 +142,7 @@ std::vector<int> findStationsByUnusedPercentage(const std::map<int, CompressStat
     return result;
 }
 
-std::vector<int> findStationsById(const std::map<int, CompressStation>& stations, int id) {
+std::vector<int> Operations::findStationsById(const std::map<int, CompressStation>& stations, int id) {
     std::vector<int> result;
     if (stations.find(id) != stations.end()) {
         result.push_back(id);
@@ -150,7 +150,7 @@ std::vector<int> findStationsById(const std::map<int, CompressStation>& stations
     return result;
 }
 
-void editPipe(std::map<int, Pipe>& pipes, Logger& logger) {
+void Operations::editPipe(std::map<int, Pipe>& pipes, Logger& logger) {
     if (pipes.empty()) {
         std::cout << "No pipes available to edit.\n\n";
         return;
@@ -279,7 +279,7 @@ void editPipe(std::map<int, Pipe>& pipes, Logger& logger) {
     } while (fieldChoice != 0);
 }
 
-void editCompressStation(std::map<int, CompressStation>& stations, Logger& logger) {
+void Operations::editCompressStation(std::map<int, CompressStation>& stations, Logger& logger) {
     if (stations.empty()) {
         std::cout << "No compress stations available to edit.\n\n";
         return;
@@ -402,7 +402,7 @@ void editCompressStation(std::map<int, CompressStation>& stations, Logger& logge
     } while (fieldChoice != 0);
 }
 
-void batchEditPipes(std::map<int, Pipe>& pipes, GasNetwork& network, Logger& logger) {
+void Operations::batchEditPipes(std::map<int, Pipe>& pipes, GasNetwork& network, Logger& logger) {
     if (pipes.empty()) {
         std::cout << "No pipes available to edit.\n\n";
         return;
@@ -628,7 +628,7 @@ void batchEditPipes(std::map<int, Pipe>& pipes, GasNetwork& network, Logger& log
 }
 
 
-void connectCS(std::map<int, Pipe>& pipes, std::map<int, CompressStation>& stations,
+void Operations::connectCS(std::map<int, Pipe>& pipes, std::map<int, CompressStation>& stations,
     GasNetwork& network, Logger& logger) {
 
     if (stations.size() < 2) {
@@ -735,7 +735,7 @@ void connectCS(std::map<int, Pipe>& pipes, std::map<int, CompressStation>& stati
     }
 }
 
-void disconnectCS(GasNetwork& network, Logger& logger) {
+void Operations::disconnectCS(GasNetwork& network, Logger& logger) {
     int pipeId;
 
     if (!isValidInput(pipeId, "Enter pipe ID to disconnect: ")) {
@@ -752,11 +752,11 @@ void disconnectCS(GasNetwork& network, Logger& logger) {
     }
 }
 
-void showNetwork(const GasNetwork& network) {
+void Operations::showNetwork(const GasNetwork& network) {
     network.displayNetwork();
 }
 
-void topologicalSortNetwork(const GasNetwork& network) {
+void Operations::topologicalSortNetwork(const GasNetwork& network) {
     std::vector<int> sorted = network.topologicalSort();
 
     if (sorted.empty()) {

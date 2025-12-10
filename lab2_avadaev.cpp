@@ -10,6 +10,7 @@
 
 void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations, GasNetwork& network ,Logger& logger) {
     int menu_choose;
+    Operations ops;
 
     while (true) {
         std::cout << "Select an action:\n"
@@ -38,15 +39,15 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
 
         switch (menu_choose) {
         case 1:
-            addPipe(pipes, logger);
+            ops.addPipe(pipes, logger);
             break;
 
         case 2:
-            addCompressStation(stations, logger);
+            ops.addCompressStation(stations, logger);
             break;
 
         case 3:
-            viewAllObjects(pipes, stations);
+            ops.viewAllObjects(pipes, stations);
             break;
 
         case 4: {
@@ -71,7 +72,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                     break;
                 }
                 logger.logUserInput(std::to_string(searchId));
-                foundPipes = findPipesById(pipes, searchId);
+                foundPipes = ops.findPipesById(pipes, searchId);
 
             }
             else if (searchChoice == 2) {
@@ -81,7 +82,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                     break;
                 }
                 logger.logUserInput(name);
-                foundPipes = findPipesByName(pipes, name);
+                foundPipes = ops.findPipesByName(pipes, name);
 
             }
             else if (searchChoice == 3) {
@@ -96,7 +97,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                 }
                 logger.logUserInput(std::to_string(statusChoice));
 
-                foundPipes = findPipesByStatus(pipes, statusChoice == 1);
+                foundPipes = ops.findPipesByStatus(pipes, statusChoice == 1);
 
             }
             else {
@@ -138,7 +139,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                     break;
                 }
                 logger.logUserInput(std::to_string(searchId));
-                foundStations = findStationsById(stations, searchId);
+                foundStations = ops.findStationsById(stations, searchId);
 
             }
             else if (searchChoice == 2) {
@@ -148,7 +149,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                     break;
                 }
                 logger.logUserInput(name);
-                foundStations = findStationsByName(stations, name);
+                foundStations = ops.findStationsByName(stations, name);
 
             }
             else if (searchChoice == 3) {
@@ -158,7 +159,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
                     break;
                 }
                 logger.logUserInput(std::to_string(minPercent));
-                foundStations = findStationsByUnusedPercentage(stations, minPercent);
+                foundStations = ops.findStationsByUnusedPercentage(stations, minPercent);
 
             }
             else {
@@ -179,7 +180,7 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
         }
 
         case 6:
-            batchEditPipes(pipes, network, logger);
+            ops.batchEditPipes(pipes, network, logger);
             break;
 
         case 7: {
@@ -233,27 +234,27 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
         }
 
         case 9:
-            editPipe(pipes, logger);
+            ops.editPipe(pipes, logger);
             break;
 
         case 10:
-            editCompressStation(stations, logger);
+            ops.editCompressStation(stations, logger);
             break;
 
         case 11:
-            connectCS(pipes, stations, network, logger);
+            ops.connectCS(pipes, stations, network, logger);
             break;
 
         case 12:
-            disconnectCS(network, logger);
+            ops.disconnectCS(network, logger);
             break;
 
         case 13:
-            showNetwork(network);
+            ops.showNetwork(network);
             break;
 
         case 14:
-            topologicalSortNetwork(network);
+            ops.topologicalSortNetwork(network);
             break;
 
         case 0:
@@ -280,4 +281,3 @@ int main() {
     return 0;
 }
 
-//добавить удаоени труб или кс
