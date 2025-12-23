@@ -1,8 +1,14 @@
-#ifndef PIPE_H
+﻿#ifndef PIPE_H
 #define PIPE_H 
 
 #include <string>
 #include <iostream>
+#include <unordered_map>
+#include <set>
+
+extern const std::unordered_map<int, double> PIPE_CAPACITY;
+extern const std::set<int> ALLOWED_DIAMETERS;
+extern const double INFINITE_WEIGHT;
 
 class Pipe {
 private:

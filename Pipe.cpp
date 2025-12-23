@@ -1,4 +1,14 @@
-#include "Pipe.h"
+﻿#include "Pipe.h"
+
+const std::unordered_map<int, double> PIPE_CAPACITY = {
+    {500, 4.5},   // млн м³/сут
+    {700, 11.5},  // млн м³/сут
+    {1000, 28.0}, // млн м³/сут
+    {1400, 95.0}  // млн м³/сут
+};
+
+const std::set<int> ALLOWED_DIAMETERS = { 500, 700, 1000, 1400 };
+const double INFINITE_WEIGHT = 1e9;
 
 Pipe::Pipe() : id(0), name(""), length(0.0f), diameter(0), status(false) {}
 

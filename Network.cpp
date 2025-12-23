@@ -1,6 +1,10 @@
 #include "Network.h"
 #include <iostream>
 #include <algorithm>
+#include <queue>
+#include <stack>
+#include <limits>
+
 
 GasNetwork::GasNetwork() {}
 
@@ -17,13 +21,27 @@ bool GasNetwork::addConnection(int pipeId, int startCSId, int endCSId, int diame
         return false;
     }
 
+    if (ALLOWED_DIAMETERS.find(diameter) == ALLOWED_DIAMETERS.end()) {
+        std::cout << "Error: Invalid diameter! Allowed diameters: ";
+        for (int d : ALLOWED_DIAMETERS) std::cout << d << " ";
+        std::cout << "\n";
+        return false;
+    }
+
     adjacencyList[startCSId];
     adjacencyList[endCSId];
 
-    Connection conn(pipeId, startCSId, endCSId, diameter);
+    
+
+    double capacity = 0.0;
+    auto capIt = PIPE_CAPACITY.find(diameter);
+    if (capIt != PIPE_CAPACITY.end()) {
+        capacity = capIt->second;
+    }
+
+    Connection conn(pipeId, startCSId, endCSId, diameter, capacity, 0.0);
     adjacencyList[startCSId].push_back(conn);
     usedPipes[pipeId] = true;
-
 
     if (!isAcyclic()) {
         
@@ -168,4 +186,185 @@ std::vector<int> GasNetwork::findAvailablePipes(const std::map<int, Pipe>& pipes
     }
 
     return availablePipes;
+}
+
+std::pair<double, std::vector<int>> GasNetwork::findShortestPath(
+    int startCSId, int endCSId, const std::map<int, Pipe>& pipes) const {
+
+    if (adjacencyList.find(startCSId) == adjacencyList.end() ||
+        adjacencyList.find(endCSId) == adjacencyList.end()) {
+        return { std::numeric_limits<double>::max(), {} };
+    }
+
+    std::map<int, double> distances;
+    std::map<int, int> previous;
+    std::set<std::pair<double, int>> priorityQueue;
+
+    for (const auto& node : adjacencyList) {
+        distances[node.first] = std::numeric_limits<double>::max();
+        for (const auto& conn : node.second) {
+            distances[conn.endCSId] = std::numeric_limits<double>::max();
+        }
+    }
+
+    distances[startCSId] = 0.0;
+    priorityQueue.insert({ 0.0, startCSId });
+
+
+    while (!priorityQueue.empty()) {
+        auto current = *priorityQueue.begin();
+        priorityQueue.erase(priorityQueue.begin());
+
+        double currentDist = current.first;
+        int currentNode = current.second;
+
+        if (currentNode == endCSId) break;
+        if (currentDist > distances[currentNode]) continue;
+
+  
+        if (adjacencyList.find(currentNode) != adjacencyList.end()) {
+            for (const auto& conn : adjacencyList.at(currentNode)) {
+             
+                double edgeWeight = std::numeric_limits<double>::max();
+
+                auto pipeIt = pipes.find(conn.pipeId);
+                if (pipeIt != pipes.end()) {
+                    if (pipeIt->second.getStatus()) {
+                   
+                        edgeWeight = std::numeric_limits<double>::max();
+                    }
+                    else {
+                      
+                        edgeWeight = pipeIt->second.getLength();
+                    }
+                }
+
+                if (edgeWeight < std::numeric_limits<double>::max()) {
+                    double newDist = currentDist + edgeWeight;
+
+                    if (newDist < distances[conn.endCSId]) {
+                        priorityQueue.erase({ distances[conn.endCSId], conn.endCSId });
+                        distances[conn.endCSId] = newDist;
+                        previous[conn.endCSId] = currentNode;
+                        priorityQueue.insert({ newDist, conn.endCSId });
+                    }
+                }
+            }
+        }
+    }
+
+   
+    std::vector<int> path;
+    if (distances[endCSId] < std::numeric_limits<double>::max()) {
+        for (int at = endCSId; at != startCSId; at = previous[at]) {
+            path.push_back(at);
+        }
+        path.push_back(startCSId);
+        std::reverse(path.begin(), path.end());
+    }
+
+    return { distances[endCSId], path };
+}
+
+
+
+double GasNetwork::calculateMaxFlowFF(int sourceCSId, int sinkCSId,
+    const std::map<int, Pipe>& pipes) const {
+    if (adjacencyList.empty() ||
+        adjacencyList.find(sourceCSId) == adjacencyList.end() ||
+        adjacencyList.find(sinkCSId) == adjacencyList.end()) {
+        return 0.0;
+    }
+
+    
+    std::map<int, std::map<int, double>> capacity;
+
+    
+    for (const auto& node : adjacencyList) {
+        int u = node.first;
+        for (const auto& conn : node.second) {
+            int v = conn.endCSId;
+
+         
+            double cap = 0.0;
+            auto pipeIt = pipes.find(conn.pipeId);
+            if (pipeIt != pipes.end()) {
+                
+                if (!pipeIt->second.getStatus()) {
+                    auto capIt = PIPE_CAPACITY.find(conn.diameter);
+                    if (capIt != PIPE_CAPACITY.end()) {
+                        cap = capIt->second;
+                    }
+                }
+             
+            }
+
+            capacity[u][v] = cap;
+            capacity[v][u] = 0.0; 
+        }
+    }
+
+    double maxFlow = 0.0;
+
+   
+    while (true) {
+        
+        std::queue<int> q;
+        std::map<int, int> parent;
+        std::map<int, bool> visited;
+
+        q.push(sourceCSId);
+        visited[sourceCSId] = true;
+        parent[sourceCSId] = -1;
+
+        bool foundPath = false;
+
+        while (!q.empty() && !foundPath) {
+            int u = q.front();
+            q.pop();
+
+            for (const auto& node : adjacencyList) {
+                for (const auto& conn : node.second) {
+                    if (conn.startCSId == u) {
+                        int v = conn.endCSId;
+
+                        if (capacity.find(u) != capacity.end() &&
+                            capacity[u].find(v) != capacity[u].end() &&
+                            !visited[v] && capacity[u][v] > 0) {
+                            visited[v] = true;
+                            parent[v] = u;
+                            q.push(v);
+
+                            if (v == sinkCSId) {
+                                foundPath = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (foundPath) break;
+            }
+        }
+
+    
+        if (!foundPath) break;
+
+        
+        double pathFlow = std::numeric_limits<double>::max();
+        for (int v = sinkCSId; v != sourceCSId; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = std::min(pathFlow, capacity[u][v]);
+        }
+
+        
+        for (int v = sinkCSId; v != sourceCSId; v = parent[v]) {
+            int u = parent[v];
+            capacity[u][v] -= pathFlow;
+            capacity[v][u] += pathFlow; 
+        }
+
+        maxFlow += pathFlow;
+    }
+
+    return maxFlow;
 }

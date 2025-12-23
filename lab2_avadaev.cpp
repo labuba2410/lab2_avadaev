@@ -28,6 +28,8 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
             << "12. Disconnect CS\n"
             << "13. Show network\n"
             << "14. Topological sort\n"
+            << "15. Calculate maximum flow between CS\n"
+            << "16. Find shortest path between CS\n"
             << "0. Exit\n";
 
         if (!isValidInput(menu_choose, "Enter your choice: ")) {
@@ -255,6 +257,13 @@ void showMenu(std::map<int, Pipe>&pipes, std::map<int, CompressStation>&stations
 
         case 14:
             ops.topologicalSortNetwork(network);
+            break;
+
+        case 15:
+            ops.calculateMaxFlowBetweenCS(network, pipes, stations, logger);
+            break;
+        case 16:
+            ops.findShortestPathBetweenCS(network, pipes, stations, logger);
             break;
 
         case 0:

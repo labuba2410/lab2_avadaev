@@ -1,4 +1,4 @@
-#include "operations.h"
+﻿#include "operations.h"
 #include <algorithm>
 #include <iostream>
 
@@ -769,4 +769,124 @@ void Operations::topologicalSortNetwork(const GasNetwork& network) {
         }
         std::cout << "\n";
     }
+}
+
+void Operations::calculateMaxFlowBetweenCS(const GasNetwork& network,
+    const std::map<int, Pipe>& pipes,
+    const std::map<int, CompressStation>& stations,
+    Logger& logger) {
+    if (stations.size() < 2) {
+        std::cout << "Need at least 2 compress stations!\n\n";
+        return;
+    }
+
+    std::cout << "Available compress stations:\n";
+    for (const auto& pair : stations) {
+        std::cout << "ID: " << pair.first << " - " << pair.second.getName() << "\n";
+    }
+
+    int sourceId, sinkId;
+
+    if (!isValidInput(sourceId, "Enter SOURCE CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(sourceId));
+
+    if (stations.find(sourceId) == stations.end()) {
+        std::cout << "Source CS with ID " << sourceId << " not found!\n\n";
+        return;
+    }
+
+    if (!isValidInput(sinkId, "Enter SINK CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(sinkId));
+
+    if (stations.find(sinkId) == stations.end()) {
+        std::cout << "Sink CS with ID " << sinkId << " not found!\n\n";
+        return;
+    }
+
+    if (sourceId == sinkId) {
+        std::cout << "Source and sink cannot be the same!\n\n";
+        return;
+    }
+
+    double maxFlow = network.calculateMaxFlowFF(sourceId, sinkId, pipes);
+
+    std::cout << "\n=== MAXIMUM FLOW CALCULATION ===\n";
+    std::cout << "From CS " << sourceId << " to CS " << sinkId << "\n";
+    std::cout << "Maximum flow: " << maxFlow << " million cubic m/day\n";
+
+    if (maxFlow == 0.0) {
+        std::cout << "No path exists or all pipes are under renovation!\n";
+    }
+
+    std::cout << "================================\n\n";
+}
+
+void Operations::findShortestPathBetweenCS(const GasNetwork& network,
+    const std::map<int, Pipe>& pipes,
+    const std::map<int, CompressStation>& stations,
+    Logger& logger) {
+    if (stations.size() < 2) {
+        std::cout << "Need at least 2 compress stations!\n\n";
+        return;
+    }
+
+    std::cout << "Available compress stations:\n";
+    for (const auto& pair : stations) {
+        std::cout << "ID: " << pair.first << " - " << pair.second.getName() << "\n";
+    }
+
+    int startId, endId;
+
+    if (!isValidInput(startId, "Enter START CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(startId));
+
+    if (stations.find(startId) == stations.end()) {
+        std::cout << "Start CS with ID " << startId << " not found!\n\n";
+        return;
+    }
+
+    if (!isValidInput(endId, "Enter END CS ID: ")) {
+        std::cout << "Invalid CS ID!\n\n";
+        return;
+    }
+    logger.logUserInput(std::to_string(endId));
+
+    if (stations.find(endId) == stations.end()) {
+        std::cout << "End CS with ID " << endId << " not found!\n\n";
+        return;
+    }
+
+    auto result = network.findShortestPath(startId, endId, pipes);
+    double distance = result.first;
+    const auto& path = result.second;
+
+    std::cout << "\n=== SHORTEST PATH CALCULATION ===\n";
+    std::cout << "From CS " << startId << " to CS " << endId << "\n";
+
+    if (distance < std::numeric_limits<double>::max()) {
+        std::cout << "Total distance: " << distance << " units\n";
+        std::cout << "Path: ";
+        for (size_t i = 0; i < path.size(); ++i) {
+            std::cout << "CS " << path[i];
+            if (i < path.size() - 1) std::cout << " -> ";
+        }
+        std::cout << "\n";
+    }
+    else {
+        std::cout << "No valid path exists!\n";
+        std::cout << "Possible reasons:\n";
+        std::cout << "1. No connection between stations\n";
+        std::cout << "2. All connecting pipes are under renovation\n";
+    }
+
+    std::cout << "=================================\n\n";
 }

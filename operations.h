@@ -34,4 +34,15 @@ public:
     void disconnectCS(GasNetwork& network, Logger& logger);
     void showNetwork(const GasNetwork& network);
     void topologicalSortNetwork(const GasNetwork& network);
+
+    void calculateMaxFlowBetweenCS(const GasNetwork& network,
+        const std::map<int, Pipe>& pipes,
+        const std::map<int, CompressStation>& stations,
+        Logger& logger);
+
+    void findShortestPathBetweenCS(const GasNetwork& network,
+        const std::map<int, Pipe>& pipes,
+        const std::map<int, CompressStation>& stations,
+        Logger& logger);
+
 };
